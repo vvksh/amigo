@@ -2,10 +2,13 @@ package amigo
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/kennygrant/sanitize"
 
 	"github.com/slack-go/slack"
 )
@@ -38,4 +41,17 @@ func SendSlackNotification(msg string, channel string) error {
 	webHookMessage.Text = msg
 	webHookMessage.Channel = channel
 	return slack.PostWebhook(webhookURL, &webHookMessage)
+}
+
+// Strips html tags, replace common entities, and escapes <>&;'" in the result.
+func Sanitize(input string) string {
+	return sanitize.HTML(input)
+}
+
+func GetRHMobileStockQuoteUrl(stock string) string {
+	return fmt.Sprintf("https://robinhood.com/applink/instrument/?symbol=%s", stock)
+}
+
+func GetRHWebStockQuoteUrl(stock string) string {
+	return fmt.Sprintf("https://robinhood.com/stocks/%s", stock)
 }
